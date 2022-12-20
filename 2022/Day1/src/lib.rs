@@ -2,26 +2,46 @@ use std::error::Error;
 use std::fs;
 
 pub struct Config {
-    pub query : String,
     pub file_path: String
 }
 
 impl Config {
     pub fn build(args: &Vec<String>) -> Result<Config, &'static str> {
-        if args.len() < 3 {
+        if args.len() < 2 {
             return Err("not enough arguments");
         }
-        let query = args[1].clone();
-        let file_path = args[2].clone();
+        let file_path = args[1].clone();
 
-        return Ok(Config { query, file_path });
+        return Ok(Config { file_path });
     }
 }
 
-pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
+pub fn run(config: Config) -> Result<u64, Box<dyn Error>> {
     let contents = fs::read_to_string(config.file_path)?;
+    let split: Vec<&str> = contents.split("\n\n").collect();
+    let mut max_cal: u64 = 0;
 
-    println!("With text:\n{contents}");
+    for elf in split.into_iter() {
+        let cal = parse_each_elf(elf);
+        if cal > max_cal {
+            max_cal = cal;
+        }
+    }
 
-    return Ok(());
+    return Ok(max_cal);
+}
+
+fn parse_each_elf(elf: &str) -> u64 {
+    let mut elf_sum: u64 = 0;
+
+    let split: Vec<&str> = elf.split("\n").collect();
+
+    for str_num in split.into_iter() {
+        if str_num.is_empty() {
+            continue;
+        }
+        elf_sum += str_num.parse::<u64>().unwrap();
+    }
+
+    return elf_sum;
 }

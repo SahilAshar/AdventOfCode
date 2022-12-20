@@ -11,11 +11,12 @@ fn main() {
         process::exit(1);
     });
 
-    println!("Searching for {}", config.query);
-    println!("In file {}", config.query);
+    println!("In file {}", config.file_path);
 
-    if let Err(e) = day1::run(config) {
-        println!("Application error: {e}");
+    let max_calorie_count = day1::run(config).unwrap_or_else(|err| {
+        println!("Application error: {err}");
         process::exit(1);
-    }
+    });
+
+    println!("Max Calorie Count is: {}", max_calorie_count);
 }
